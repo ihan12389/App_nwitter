@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
-  TextInput,
-  Button,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
@@ -16,7 +14,6 @@ import Popup from "../components/Popup";
 
 const Home = (props) => {
   const user = useSelector((state) => state.user);
-
   const [nweets, setNweets] = useState([]);
 
   const logout = async () => {
@@ -63,9 +60,6 @@ const Home = (props) => {
           </TouchableOpacity>
         </View>
         <Popup visible={user.visible} />
-        {/* <Text>Home Screen</Text> */}
-        {/* <Text>{user.name}</Text> */}
-        {/* <Button title="Logout" onPress={() => logout()} /> */}
         {nweets.map((nweet, index) => (
           <View style={styles.nweets} key={index}>
             <Nweet
@@ -81,12 +75,6 @@ const Home = (props) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    // flex: 1,
-    // backgroundColor: "#e7473c",
-    // justifyContent: "center",
-    // alignItems: "center",
-  },
   nweets: {
     backgroundColor: "#efefef",
     margin: 30,

@@ -1,4 +1,4 @@
-import { firebaseInstance, dbService, authService } from "../Firebase.js";
+import { dbService, authService } from "../Firebase.js";
 
 // define types
 
@@ -7,12 +7,10 @@ export const UPDATE_PASSWORD = "UPDATE_PASSWORD";
 export const UPDATE_NAME = "UPDATE_NAME";
 export const UPDATE_VISIBLE = "UPDATE_VISIBLE";
 export const UPDATE_NWEETOBJ = "UPDATE_NWEETOBJ";
-
-export const UPLOAD_NAME = "UPLOAD_NAME";
-
 export const LOGIN = "LOGIN";
 export const SIGNUP = "SIGNUP";
 export const FETCH_POST = "FETCH_POST";
+export const UPDATE_USER_PROFILE = "UPDATE_USER_PROFILE";
 
 // actions
 
@@ -45,6 +43,13 @@ export const updateVisible = (visible) => {
   };
 };
 
+export const updateUserProfile = (uri) => {
+  return {
+    type: UPDATE_USER_PROFILE,
+    payload: uri,
+  };
+};
+
 export const updateNweetObj = (nweetObj) => {
   console.log("updateNweetObj 실행");
   return {
@@ -61,7 +66,6 @@ export const login = () => {
         email,
         password
       );
-
       dispatch(getUser(response.user.uid));
     } catch (e) {
       alert(e);
@@ -74,7 +78,6 @@ export const getUser = (uid) => {
   return async (dispatch, getState) => {
     try {
       const user = await dbService.collection("users").doc(uid).get();
-
       dispatch({ type: LOGIN, payload: user.data() });
     } catch (e) {
       alert(e);
@@ -96,11 +99,10 @@ export const signup = () => {
           email: email,
           displayName: displayName,
           visible: false,
+          profileImageUrl: "",
         };
-
         response.user.updateProfile(user);
         dbService.collection("users").doc(response.user.uid).set(user);
-
         dispatch({ type: SIGNUP, payload: user });
       }
     } catch (e) {

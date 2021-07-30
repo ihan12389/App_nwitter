@@ -1,13 +1,29 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text, TextInput, Button } from "react-native";
+import React, { useEffect, useState, useRef } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  Button,
+  Image,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Dimensions,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { updateName } from "../actions/user";
+import { updateName, updateUserProfile } from "../actions/user";
 import { authService, dbService } from "../Firebase";
+import * as ImagePicker from "expo-image-picker";
+import Constants from "expo-constants";
 
 const Profile = (props) => {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
+
   const [name, setName] = useState(user.displayName);
+  const [image, setImage] = useState(null);
 
   const update = async () => {
     await authService.currentUser.updateProfile({ displayName: name });
@@ -15,25 +31,181 @@ const Profile = (props) => {
     dispatch(updateName(name));
   };
 
-  console.log(user.displayName);
+  const updateProfile = async () => {
+    await authService.currentUser.updateProfile({ profileImageUrl: image });
+    await dbService.doc(`users/${user.uid}`).update({ profileImageUrl: image });
+    dispatch(updateUserProfile(image));
+    setImage(null);
+  };
 
-  useEffect(() => {}, []);
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      quality: 1,
+    });
+    if (!result.cancelled) {
+      setImage(result.uri);
+    }
+  };
+
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS !== "web") {
+        const { status } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
+          alert("Sorry, we need camera roll permissions to make this work!");
+        }
+      }
+    })();
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <TextInput value={name} onChangeText={(text) => setName(text)} />
-      <Text>{user.displayName}</Text>
-      <Button title="Submit" onPress={() => update()} />
-      <Button title="Back" onPress={() => props.navigation.navigate("Home")} />
-    </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS == "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <View style={styles.imageBar}>
+            {user.profileImageUrl.length !== 0 && (
+              <Image
+                source={{ uri: user.profileImageUrl }}
+                style={[styles.image]}
+              />
+            )}
+            {image !== null && (
+              <Image source={{ uri: image }} style={[styles.newImage]} />
+            )}
+          </View>
+          <View style={styles.textBar}>
+            <TextInput
+              style={styles.nameInput}
+              value={name}
+              onChangeText={(text) => setName(text)}
+              maxLength={15}
+              style={styles.inputName}
+            />
+            <Text style={styles.name}>{user.displayName}</Text>
+          </View>
+          {image === null ? (
+            <View style={styles.buttonBar}>
+              <TouchableOpacity
+                onPress={() => pickImage()}
+                style={styles.buttonContainer1}
+              >
+                <Text style={styles.buttonText}>프로필 사진</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => update()}
+                style={styles.buttonContainer2}
+              >
+                <Text style={styles.buttonText}>프로필 네임</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setImage(null);
+                  props.navigation.navigate("Home");
+                }}
+                style={styles.buttonContainer3}
+              >
+                <Text style={styles.buttonText}>Back</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.buttonBar}>
+              <TouchableOpacity
+                style={styles.buttonContainer1}
+                onPress={() => updateProfile()}
+              >
+                <Text style={styles.buttonText}>UPDATE</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.buttonContainer2}
+                onPress={() => {
+                  setImage(null);
+                }}
+              >
+                <Text style={styles.buttonText}>CANCEL</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  buttonBar: {
+    flexDirection: "row",
+    width: "100%",
+    height: Dimensions.get("window").height / 15,
+    opacity: 0.7,
+  },
+  buttonContainer1: {
     flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 30,
+    backgroundColor: "#ebae34",
+  },
+  buttonContainer2: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#eb5334",
+    paddingHorizontal: 30,
+  },
+  buttonContainer3: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 30,
+    backgroundColor: "#eb3471",
+  },
+  buttonText: {
+    color: "white",
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+  textBar: {
+    width: "80%",
+    alignItems: "center",
+  },
+  inputName: {
+    width: "100%",
+    borderColor: "#ddd",
+    borderBottomWidth: 2,
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  name: {
+    color: "#3471eb",
+    fontWeight: "bold",
+  },
+  imageBar: {
+    flexDirection: "row",
+    width: "100%",
     justifyContent: "center",
     alignItems: "center",
+    marginTop: Dimensions.get("window").height / 14,
+  },
+  image: {
+    width: (Dimensions.get("window").width * 3) / 5,
+    height: (Dimensions.get("window").width * 3) / 5,
+  },
+  newImage: {
+    width: (Dimensions.get("window").width * 2) / 6,
+    height: (Dimensions.get("window").width * 2) / 6,
+    marginLeft: 10,
   },
 });
 

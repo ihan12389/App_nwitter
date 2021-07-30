@@ -7,7 +7,7 @@ import {
   UPDATE_NAME,
   UPDATE_VISIBLE,
   UPDATE_NWEETOBJ,
-  UPLOAD_NAME,
+  UPDATE_USER_PROFILE,
 } from "../actions/user";
 
 const user = (state = {}, action) => {
@@ -24,6 +24,8 @@ const user = (state = {}, action) => {
       return { ...state, displayName: action.payload };
     case UPDATE_VISIBLE:
       return { ...state, visible: action.payload };
+    case UPDATE_USER_PROFILE:
+      return { ...state, profileImageUrl: action.payload };
     case UPDATE_NWEETOBJ:
       return {
         ...state,
