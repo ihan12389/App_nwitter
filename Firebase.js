@@ -20,4 +20,5 @@ export const storageService = firebase.storage();
 
 dbService.settings({
   timestampsInSnapshots: true,
+  merge: true,
 });

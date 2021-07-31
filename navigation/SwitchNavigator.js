@@ -5,6 +5,7 @@ import Signup from "../screens/Signup";
 import Home from "../screens/Home";
 import Enter from "../screens/Enter";
 import Profile from "../screens/Profile";
+import ViewPager from "../screens/ViewPager";
 
 const SwitchNavigator = createSwitchNavigator(
   {
@@ -20,8 +21,8 @@ const SwitchNavigator = createSwitchNavigator(
     Enter: {
       screen: Enter,
     },
-    Profile: {
-      screen: Profile,
+    ViewPager: {
+      screen: ViewPager,
     },
   },
   {

@@ -97,7 +97,7 @@ export const signup = () => {
         const user = {
           uid: response.user.uid,
           email: email,
-          displayName: displayName,
+          displayName: displayName.replace(/(\s*)/g, ""),
           visible: false,
           profileImageUrl: "",
         };

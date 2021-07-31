@@ -3,73 +3,130 @@ import {
   Text,
   View,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
+  FlatList,
+  Dimensions,
 } from "react-native";
-import { useSelector, useDispatch } from "react-redux";
 import Nweet from "../components/Nweet";
 import { authService, dbService } from "../Firebase";
 import { LinearGradient } from "expo-linear-gradient";
 import Popup from "../components/Popup";
+import { Feather } from "@expo/vector-icons";
 
 const Home = (props) => {
-  const user = useSelector((state) => state.user);
   const [nweets, setNweets] = useState([]);
+  const [n, setN] = useState(10);
+  const [last, setLast] = useState(0);
+  const [first, setFirst] = useState(true);
 
   const logout = async () => {
     await authService.signOut();
     props.navigation.navigate("Login");
   };
 
+  const _renderItem = ({ item }) => {
+    console.log("렌더링 시작");
+    return (
+      <View style={styles.nweets}>
+        <Nweet
+          key={item.id}
+          nweetObj={item}
+          isOwner={item.creatorId === props.user.uid}
+        />
+      </View>
+    );
+  };
+
+  const _headerComponent = () => {
+    return (
+      <View
+        style={{
+          paddingTop: 40,
+          paddingBottom: 20,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text
+          style={{
+            textAlign: "center",
+            fontSize: 30,
+            fontWeight: "bold",
+            color: "#190309",
+            textTransform: "uppercase",
+            marginBottom: Dimensions.get("window").height / 30,
+            marginTop: Dimensions.get("window").height / 12,
+          }}
+        >
+          Welcome my App
+        </Text>
+        <TouchableOpacity
+          style={styles.barButton}
+          onPress={() => props.navigation.push("Enter")}
+        >
+          <Feather name="plus-circle" size={60} color="#ff5722" />
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const _getData = async () => {
+    if (first) {
+      await dbService
+        .collection("nweets")
+        .orderBy("createAt", "desc")
+        .limit(n)
+        .onSnapshot((snapshot) => {
+          const nweetArray = snapshot.docs.map((doc, index) => {
+            console.log(index);
+            if (index === snapshot.docs.length - 1)
+              setLast(doc.data().createAt);
+            return {
+              id: doc.id,
+              ...doc.data(),
+            };
+          });
+          setNweets(nweets.concat(nweetArray));
+          console.log(last);
+        });
+      setFirst(false);
+    } else if (!first) {
+      await dbService
+        .collection("nweets")
+        .orderBy("createAt", "desc")
+        .limit(n)
+        .startAfter(last)
+        .onSnapshot((snapshot) => {
+          const nweetArray = snapshot.docs.map((doc, index) => {
+            console.log(index);
+            if (index === snapshot.docs.length - 1)
+              setLast(doc.data().createAt);
+            return {
+              id: doc.id,
+              ...doc.data(),
+            };
+          });
+          setNweets(nweets.concat(nweetArray));
+        });
+    }
+  };
+
   useEffect(() => {
-    dbService
-      .collection("nweets")
-      .orderBy("createAt", "desc")
-      .onSnapshot((snapshot) => {
-        const nweetArray = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setNweets(nweetArray);
-      });
+    _getData();
   }, []);
 
   return (
-    <LinearGradient colors={["#74ebd5", "#acb6e5"]}>
-      <ScrollView style={styles.container}>
-        <View
-          style={{
-            flexDirection: "row",
-            paddingTop: 40,
-            paddingBottom: 20,
-            justifyContent: "center",
-            backgroundColor: "rgba(19,16,16, 0.04)",
-          }}
-        >
-          <TouchableOpacity
-            style={styles.barButton}
-            onPress={() => props.navigation.navigate("Enter")}
-          >
-            <Text style={styles.barButtonText}>글 쓰기</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.barButton}
-            onPress={() => props.navigation.navigate("Profile")}
-          >
-            <Text style={styles.barButtonText}>프로필 수정</Text>
-          </TouchableOpacity>
-        </View>
-        <Popup visible={user.visible} />
-        {nweets.map((nweet, index) => (
-          <View style={styles.nweets} key={index}>
-            <Nweet
-              key={nweet.id}
-              nweetObj={nweet}
-              isOwner={nweet.creatorId === user.uid}
-            />
-          </View>
-        ))}
-      </ScrollView>
+    <LinearGradient colors={["#fdfbfb", "#ebedee"]}>
+      <Popup visible={props.user.visible} />
+      <FlatList
+        data={nweets}
+        renderItem={_renderItem}
+        ListHeaderComponent={_headerComponent}
+        keyExtractor={(item, index) => item.id}
+        onEndReached={_getData}
+        onEndReachedThreshold={1}
+        contentContainerStyle={{ paddingBottom: 100 }}
+      />
     </LinearGradient>
   );
 };
@@ -93,8 +150,8 @@ const styles = StyleSheet.create({
   barButton: {
     width: "35%",
     borderRadius: 15,
-    marginLeft: 20,
     padding: 5,
+    alignItems: "center",
   },
   barButtonText: {
     color: "white",

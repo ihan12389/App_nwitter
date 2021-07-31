@@ -117,7 +117,10 @@ const Popup = ({ visible = "false" }) => {
           <View style={{ flexDirection: "row" }}>
             <TouchableHighlight
               style={styles.button}
-              onPress={() => updatePost()}
+              onPress={() => {
+                updatePost();
+                closeModal();
+              }}
             >
               <Text style={styles.buttonText}>Update</Text>
             </TouchableHighlight>
@@ -165,6 +168,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
   },
   button: {
+    backgroundColor: "white",
     marginLeft: 15,
     marginRight: 15,
   },

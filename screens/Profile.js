@@ -11,6 +11,7 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
   Keyboard,
+  StatusBar,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { updateName, updateUserProfile } from "../actions/user";
@@ -19,21 +20,24 @@ import * as ImagePicker from "expo-image-picker";
 import Constants from "expo-constants";
 
 const Profile = (props) => {
-  const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
-  const [name, setName] = useState(user.displayName);
+  const [name, setName] = useState(props.user.displayName);
   const [image, setImage] = useState(null);
 
   const update = async () => {
     await authService.currentUser.updateProfile({ displayName: name });
-    await dbService.doc(`users/${user.uid}`).update({ displayName: name });
+    await dbService
+      .doc(`users/${props.user.uid}`)
+      .update({ displayName: name });
     dispatch(updateName(name));
   };
 
   const updateProfile = async () => {
     await authService.currentUser.updateProfile({ profileImageUrl: image });
-    await dbService.doc(`users/${user.uid}`).update({ profileImageUrl: image });
+    await dbService
+      .doc(`users/${props.user.uid}`)
+      .update({ profileImageUrl: image });
     dispatch(updateUserProfile(image));
     setImage(null);
   };
@@ -61,22 +65,29 @@ const Profile = (props) => {
   }, []);
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS == "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
-    >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "space-between",
+          alignItems: "center",
+          backgroundColor: "#fdfbfb",
+        }}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
           style={{
-            flex: 1,
-            justifyContent: "space-between",
+            width: "100%",
             alignItems: "center",
+            justifyContent: "space-around",
+            flex: 9,
           }}
+          keyboardVerticalOffset={0}
         >
           <View style={styles.imageBar}>
-            {user.profileImageUrl.length !== 0 && (
+            {props.user.profileImageUrl.length !== 0 && (
               <Image
-                source={{ uri: user.profileImageUrl }}
+                source={{ uri: props.user.profileImageUrl }}
                 style={[styles.image]}
               />
             )}
@@ -92,53 +103,44 @@ const Profile = (props) => {
               maxLength={15}
               style={styles.inputName}
             />
-            <Text style={styles.name}>{user.displayName}</Text>
+            <Text style={styles.name}>{props.user.displayName}</Text>
           </View>
-          {image === null ? (
-            <View style={styles.buttonBar}>
-              <TouchableOpacity
-                onPress={() => pickImage()}
-                style={styles.buttonContainer1}
-              >
-                <Text style={styles.buttonText}>프로필 사진</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => update()}
-                style={styles.buttonContainer2}
-              >
-                <Text style={styles.buttonText}>프로필 네임</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setImage(null);
-                  props.navigation.navigate("Home");
-                }}
-                style={styles.buttonContainer3}
-              >
-                <Text style={styles.buttonText}>Back</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={styles.buttonBar}>
-              <TouchableOpacity
-                style={styles.buttonContainer1}
-                onPress={() => updateProfile()}
-              >
-                <Text style={styles.buttonText}>UPDATE</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.buttonContainer2}
-                onPress={() => {
-                  setImage(null);
-                }}
-              >
-                <Text style={styles.buttonText}>CANCEL</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+        {image === null ? (
+          <View style={styles.buttonBar}>
+            <TouchableOpacity
+              onPress={() => pickImage()}
+              style={styles.buttonContainer1}
+            >
+              <Text style={styles.buttonText}>프로필 사진</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => update()}
+              style={styles.buttonContainer2}
+            >
+              <Text style={styles.buttonText}>프로필 네임</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.buttonBar}>
+            <TouchableOpacity
+              style={styles.buttonContainer1}
+              onPress={() => updateProfile()}
+            >
+              <Text style={styles.buttonText}>UPDATE</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.buttonContainer2}
+              onPress={() => {
+                setImage(null);
+              }}
+            >
+              <Text style={styles.buttonText}>CANCEL</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -178,6 +180,7 @@ const styles = StyleSheet.create({
   textBar: {
     width: "80%",
     alignItems: "center",
+    marginBottom: Dimensions.get("window").height / 8,
   },
   inputName: {
     width: "100%",

@@ -50,7 +50,17 @@ const Nweet = ({ nweetObj, isOwner }) => {
           <Text style={styles.name}>{nweetObj.userName}</Text>
         )}
         <View style={{ flexDirection: "row", marginLeft: 10 }}>
-          <Feather name="trash" style={styles.icon} onPress={() => confirm()} />
+          <Feather
+            name="trash"
+            style={styles.icon}
+            onPress={() => {
+              if (isOwner) {
+                confirm();
+              } else {
+                alert("권한이 없습니다");
+              }
+            }}
+          />
           <Feather
             name="edit"
             style={styles.icon}

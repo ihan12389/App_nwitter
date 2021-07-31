@@ -10,21 +10,24 @@ import {
 import { updateEmail, updatePassword, login, getUser } from "../actions/user";
 import { authService } from "../Firebase";
 import { useSelector, useDispatch } from "react-redux";
+import * as SplashScreen from "expo-splash-screen";
 
 const Login = (props) => {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    authService.onAuthStateChanged((User) => {
-      if (User) {
-        dispatch(getUser(User.uid));
-        if (user != null) {
-          props.navigation.navigate("Home");
-        }
-      }
-    });
-  }, []);
+  const delay_splash = async () => {
+    // 숨겨짐 방지
+    await SplashScreen.preventAutoHideAsync();
+    // 3초 대기
+    await sleep(3000);
+    // 숨김
+    await SplashScreen.hideAsync();
+  };
+
+  const sleep = (ms) => {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  };
 
   // rending
   return (
@@ -58,7 +61,7 @@ const Login = (props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
   },
