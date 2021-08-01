@@ -54,14 +54,14 @@ const ViewPager = (props) => {
 
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <PagerView style={{ flex: 1 }} initialPage={0}>
-        <View style={{ flex: 1 }} key="1">
+      <PagerView style={{ flex: 1 }} initialPage={2}>
+        <View style={{ flex: 1 }} key="1" page="1">
           <Home user={users} navigation={props.navigation} />
         </View>
-        <View style={{ flex: 1 }} key="2">
+        <View style={{ flex: 1 }} key="2" page="2">
           <Profile user={users} />
         </View>
-        <View style={{ flex: 1 }} key="3">
+        <View style={{ flex: 1 }} key="3" page="3">
           <Logout user={users} />
         </View>
       </PagerView>

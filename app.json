@@ -10,7 +10,7 @@
     },
     "splash": {
       "backgroundColor": "#ffffff",
-      "image": "./assets/loading.jpg",
+      "image": "./assets/splash.png",
       "resizeMode": "cover"
       
     },

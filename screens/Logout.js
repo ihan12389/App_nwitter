@@ -1,8 +1,8 @@
 import React from "react";
-import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { View, TouchableOpacity, Text } from "react-native";
 import { authService } from "../Firebase";
 
-const Logout = (props) => {
+const Logout = () => {
   const logout = async () => {
     await authService.signOut();
   };
@@ -19,13 +19,14 @@ const Logout = (props) => {
       <TouchableOpacity
         onPress={logout}
         style={{
-          padding: 30,
+          paddingHorizontal: 30,
+          paddingVertical: 20,
           backgroundColor: "#fe0000",
-          borderRadius: 60,
-          marginBottom: 80,
+          borderRadius: 40,
+          marginBottom: 50,
         }}
       >
-        <Text style={{ fontSize: 35, fontWeight: "bold", color: "white" }}>
+        <Text style={{ fontSize: 25, fontWeight: "bold", color: "white" }}>
           Log out
         </Text>
       </TouchableOpacity>

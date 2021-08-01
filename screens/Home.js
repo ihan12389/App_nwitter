@@ -19,13 +19,7 @@ const Home = (props) => {
   const [last, setLast] = useState(0);
   const [first, setFirst] = useState(true);
 
-  const logout = async () => {
-    await authService.signOut();
-    props.navigation.navigate("Login");
-  };
-
   const _renderItem = ({ item }) => {
-    console.log("렌더링 시작");
     return (
       <View style={styles.nweets}>
         <Nweet
@@ -78,7 +72,6 @@ const Home = (props) => {
         .limit(n)
         .onSnapshot((snapshot) => {
           const nweetArray = snapshot.docs.map((doc, index) => {
-            console.log(index);
             if (index === snapshot.docs.length - 1)
               setLast(doc.data().createAt);
             return {
@@ -87,7 +80,6 @@ const Home = (props) => {
             };
           });
           setNweets(nweets.concat(nweetArray));
-          console.log(last);
         });
       setFirst(false);
     } else if (!first) {
@@ -98,7 +90,6 @@ const Home = (props) => {
         .startAfter(last)
         .onSnapshot((snapshot) => {
           const nweetArray = snapshot.docs.map((doc, index) => {
-            console.log(index);
             if (index === snapshot.docs.length - 1)
               setLast(doc.data().createAt);
             return {
