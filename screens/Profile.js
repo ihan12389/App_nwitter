@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -11,13 +11,11 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
   Keyboard,
-  StatusBar,
 } from "react-native";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { updateName, updateUserProfile } from "../actions/user";
 import { authService, dbService } from "../Firebase";
 import * as ImagePicker from "expo-image-picker";
-import Constants from "expo-constants";
 
 const Profile = (props) => {
   const dispatch = useDispatch();

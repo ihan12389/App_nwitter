@@ -23,7 +23,6 @@ const StackNavigator = () => {
       if (User) {
         dispatch(getUser(User.uid));
         if (user != null) {
-          console.log("로그인 됨!");
           setLogin(true);
         }
       } else {
@@ -40,14 +39,14 @@ const StackNavigator = () => {
       ) : login ? (
         <Stack.Navigator initialRouteName="ViewPager">
           <Stack.Screen
-            name="Enter"
-            component={Enter}
-            options={{ title: "업로드" }}
-          />
-          <Stack.Screen
             name="ViewPager"
             component={ViewPager}
             options={{ title: "메인" }}
+          />
+          <Stack.Screen
+            name="Enter"
+            component={Enter}
+            options={{ title: "업로드" }}
           />
         </Stack.Navigator>
       ) : (

@@ -3,7 +3,6 @@ import { createStore, applyMiddleware } from "redux";
 import { Provider } from "react-redux";
 import thunkMiddleware from "redux-thunk";
 import { View } from "react-native";
-import SwitchNavigator from "./navigation/SwitchNavigator";
 import reducer from "./reducers";
 import StackNavigator from "./navigation/StackNavigator";
 import * as SplashScreen from "expo-splash-screen";
@@ -41,7 +40,6 @@ export default function App() {
   return (
     <Provider store={store}>
       <View onLayout={onLayoutRootView} style={{ flex: 1 }}>
-        {/* <SwitchNavigator /> */}
         <StackNavigator />
       </View>
     </Provider>

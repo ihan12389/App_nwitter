@@ -11,13 +11,7 @@ const ViewPager = (props) => {
   const user = useSelector((state) => state.user);
 
   const [ready, setReady] = useState(false);
-  const [users, setUsers] = useState({
-    uid: "",
-    email: "",
-    displayName: "",
-    visible: false,
-    profileImageUrl: "",
-  });
+  const [users, setUsers] = useState();
 
   useEffect(() => {
     async function prepare() {
@@ -46,11 +40,9 @@ const ViewPager = (props) => {
     }
   }, [ready]);
 
-  if (!ready) {
+  if (!ready || users == null) {
     return null;
   }
-
-  console.log(props.navigation);
 
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>

@@ -36,7 +36,6 @@ export const updateName = (displayName) => {
 };
 
 export const updateVisible = (visible) => {
-  console.log("updateVisible 실행");
   return {
     type: UPDATE_VISIBLE,
     payload: visible,
@@ -51,7 +50,6 @@ export const updateUserProfile = (uri) => {
 };
 
 export const updateNweetObj = (nweetObj) => {
-  console.log("updateNweetObj 실행");
   return {
     type: UPDATE_NWEETOBJ,
     payload: nweetObj,
@@ -74,7 +72,6 @@ export const login = () => {
 };
 
 export const getUser = (uid) => {
-  console.log("getUser 실행!");
   return async (dispatch, getState) => {
     try {
       const user = await dbService.collection("users").doc(uid).get();

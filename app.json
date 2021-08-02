@@ -12,7 +12,6 @@
       "backgroundColor": "#ffffff",
       "image": "./assets/splash.png",
       "resizeMode": "cover"
-      
     },
     "assetBundlePatterns": [
       "**/*"
@@ -28,6 +27,7 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": "nwitter의 기능을 구현한 앱"
   }
 }
