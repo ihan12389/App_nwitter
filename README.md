@@ -86,5 +86,5 @@ nwitter에서 사용한 데이터베이스와 동일한 데이터베이스를 �
 개발을 하면서 배운 내용들은 블로그에 정리해두었습니다.  
 https://lihano.tistory.com/1  
   
-여기 앱은 EXPO를 통해서 실제로 테스트해 볼 수 있습니다.(expo 어플 )  
+여기 앱은 EXPO를 통해서 실제로 테스트해 볼 수 있습니다.(expo 어플 필요)  
 https://expo.dev/@lihano/app_nwitter
